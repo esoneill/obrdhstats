@@ -1,4 +1,4 @@
-import OBR, { Item } from "@owlbear-rodeo/sdk";
+import OBR, { Item, isImage } from "@owlbear-rodeo/sdk";
 import { EXTENSION_ID } from "./constants";
 import { DaggerheartStats } from "./types";
 import { buildAllBars } from "./rendering";
@@ -34,11 +34,20 @@ export async function renderBarsForToken(
   token: Item,
   stats: DaggerheartStats
 ): Promise<void> {
+  // Only render for image items (CHARACTER tokens)
+  if (!isImage(token)) {
+    console.warn(`[DH] Cannot render bars for non-image item: ${token.name}`);
+    return;
+  }
+
   // Clear any existing bars
   await clearBarsForToken(token.id);
 
+  // Get scene DPI for proper positioning
+  const sceneDpi = await OBR.scene.grid.getDpi();
+
   // Build new segments
-  const segments = buildAllBars(token.id, stats);
+  const segments = buildAllBars(token, stats, sceneDpi);
 
   // Add to scene as shared items (visible to all players)
   if (segments.length > 0) {
