@@ -6,8 +6,8 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   // Use relative base path for GitHub Pages
-  // Set base to './' for local dev, or '/DHOBRStats/' for GitHub Pages
-  base: process.env.GITHUB_PAGES === 'true' ? '/DHOBRStats/' : './',
+  // Set base to './' for local dev, or '/obrdhstats/' for GitHub Pages
+  base: process.env.GITHUB_PAGES === 'true' ? '/obrdhstats/' : './',
   build: {
     rollupOptions: {
       input: {
