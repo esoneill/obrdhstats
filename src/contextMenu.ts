@@ -13,7 +13,7 @@ export function setupContextMenu(): void {
     icons: [
       // Icon for untracked tokens
       {
-        icon: "./icons/heart-plus.svg",
+        icon: "https://esoneill.github.io/obrdhstats/icons/heart-plus.svg",
         label: "Add Daggerheart Stats",
         filter: {
           every: [
@@ -24,7 +24,7 @@ export function setupContextMenu(): void {
       },
       // Icon for tracked tokens
       {
-        icon: "./icons/heart-edit.svg",
+        icon: "https://esoneill.github.io/obrdhstats/icons/heart-edit.svg",
         label: "Edit Daggerheart Stats",
         filter: {
           every: [
@@ -35,7 +35,7 @@ export function setupContextMenu(): void {
       },
     ],
     embed: {
-      url: "./popover.html",
+      url: "https://esoneill.github.io/obrdhstats/popover.html",
       height: 320,
     },
   });
