@@ -1,11 +1,8 @@
 import OBR from "@owlbear-rodeo/sdk";
-import { refreshAllBars, clearAllBars, refreshBarsForToken } from "./lifecycle";
-import { isItemTracked } from "./itemMetadata";
+import { refreshAllBars, clearAllBars } from "./lifecycle";
 
 let refreshTimeout: number | null = null;
 let isRefreshing = false;
-let itemChangeTimeout: number | null = null;
-const refreshingTokens = new Set<string>();
 
 /**
  * Set up listeners for scene changes
@@ -53,51 +50,6 @@ export function setupSceneListeners(): void {
       }
       refreshTimeout = null;
     }, 300);
-  });
-
-  // Listen for scene item changes (additions, renames, deletions)
-  // This handles when tokens are added or their names change
-  OBR.scene.items.onChange(async (items) => {
-    const isReady = await OBR.scene.isReady();
-    if (!isReady) {
-      return;
-    }
-
-    // Only care about tracked CHARACTER items (ignore bar segment changes)
-    const trackedItems = items.filter(
-      (item) => item.layer === "CHARACTER" && isItemTracked(item)
-    );
-
-    // Exit early if no tracked tokens changed (prevents infinite loop from bar segments)
-    if (trackedItems.length === 0) {
-      return;
-    }
-
-    // Debounce to avoid excessive updates
-    if (itemChangeTimeout) {
-      clearTimeout(itemChangeTimeout);
-    }
-
-    itemChangeTimeout = window.setTimeout(async () => {
-      console.log(`[DH] Scene items changed, refreshing bars for ${trackedItems.length} tracked tokens`);
-
-      for (const item of trackedItems) {
-        // Skip if already refreshing this token
-        if (refreshingTokens.has(item.id)) {
-          console.log(`[DH] Skipping ${item.name} - already refreshing`);
-          continue;
-        }
-
-        refreshingTokens.add(item.id);
-        try {
-          await refreshBarsForToken(item);
-        } finally {
-          refreshingTokens.delete(item.id);
-        }
-      }
-
-      itemChangeTimeout = null;
-    }, 200);
   });
 }
 

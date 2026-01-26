@@ -63,14 +63,10 @@ function ActionPopover() {
   useEffect(() => {
     loadTokens();
 
-    // Refresh when CHARACTER items change (ignore bar segments)
-    const unsubscribe = OBR.scene.items.onChange((items) => {
-      // Only reload if CHARACTER layer items changed (not our bar segments)
-      const hasCharacterChanges = items.some((item) => item.layer === "CHARACTER");
-      if (hasCharacterChanges) {
-        console.log("[DH] Dashboard: CHARACTER items changed, reloading tokens");
-        loadTokens();
-      }
+    // Refresh when room metadata changes (stats updated)
+    const unsubscribe = OBR.room.onMetadataChange(() => {
+      console.log("[DH] Dashboard: Stats changed, reloading tokens");
+      loadTokens();
     });
 
     return () => unsubscribe();
