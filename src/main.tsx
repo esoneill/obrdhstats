@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import ReactDOM from "react-dom/client";
 import OBR, { Item } from "@owlbear-rodeo/sdk";
 import { setupContextMenu } from "./contextMenu";
@@ -39,7 +39,7 @@ function ActionPopover() {
   const [loading, setLoading] = useState(true);
 
   // Load tracked PC tokens
-  const loadTokens = async () => {
+  const loadTokens = useCallback(async () => {
     try {
       const tracked = await getTrackedItems();
       const tokensWithStats: TokenWithStats[] = [];
@@ -57,19 +57,20 @@ function ActionPopover() {
       console.error("[DH] Error loading tokens:", error);
     }
     setLoading(false);
-  };
+  }, []);
 
   // Load on mount and subscribe to changes
   useEffect(() => {
     loadTokens();
 
-    // Refresh when scene items change
-    const unsubscribe = OBR.scene.items.onChange(() => {
+    // Refresh when scene items change (for name updates, etc.)
+    const unsubscribe = OBR.scene.items.onChange((items) => {
+      console.log("[DH] Dashboard: Scene items changed, reloading tokens");
       loadTokens();
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [loadTokens]);
 
   if (loading) {
     return (
