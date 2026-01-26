@@ -1,6 +1,9 @@
 import OBR from "@owlbear-rodeo/sdk";
 import { refreshAllBars, clearAllBars } from "./lifecycle";
 
+let refreshTimeout: number | null = null;
+let isRefreshing = false;
+
 /**
  * Set up listeners for scene changes
  * These handle when scenes load/unload and when items change
@@ -21,24 +24,32 @@ export function setupSceneListeners(): void {
     }
   });
 
-  // When items in the scene change
-  // This fires on add, delete, update
-  OBR.scene.items.onChange(async (items) => {
-    const isReady = await OBR.scene.isReady();
-    if (!isReady) return;
-
-    // Only refresh if tracked CHARACTER items changed (not our own bar segments)
-    const trackedItemsChanged = items.some(
-      (item) =>
-        item.layer === "CHARACTER" &&
-        item.metadata &&
-        item.metadata["daggerheart-tracker/tracked"] !== undefined
-    );
-
-    if (trackedItemsChanged) {
-      console.log("[DH] Tracked items changed, refreshing bars");
-      await refreshAllBars();
+  // Listen for room metadata changes (where stats are stored)
+  // This is more reliable than listening to all item changes
+  OBR.room.onMetadataChange(async () => {
+    if (isRefreshing) {
+      console.log("[DH] Refresh already in progress, skipping");
+      return;
     }
+
+    // Debounce rapid changes
+    if (refreshTimeout) {
+      clearTimeout(refreshTimeout);
+    }
+
+    refreshTimeout = window.setTimeout(async () => {
+      const isReady = await OBR.scene.isReady();
+      if (isReady) {
+        console.log("[DH] Room metadata changed, refreshing bars");
+        isRefreshing = true;
+        try {
+          await refreshAllBars();
+        } finally {
+          isRefreshing = false;
+        }
+      }
+      refreshTimeout = null;
+    }, 300);
   });
 }
 

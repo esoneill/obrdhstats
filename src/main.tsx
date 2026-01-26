@@ -48,7 +48,12 @@ function ActionPopover() {
         const stats = await loadTokenStats(item);
         if (stats && stats.isPC) {
           // Only show PCs, not NPCs
-          console.log("[DH] Loading PC token:", item.name, "ID:", item.id);
+          console.log("[DH] Loading PC token:", {
+            name: item.name,
+            id: item.id,
+            text: (item as any).text,
+            label: (item as any).label,
+          });
           tokensWithStats.push({ item, stats });
         }
       }
