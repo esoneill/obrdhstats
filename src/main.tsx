@@ -1,8 +1,11 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
-import OBR from "@owlbear-rodeo/sdk";
+import OBR, { Item } from "@owlbear-rodeo/sdk";
 import { setupContextMenu } from "./contextMenu";
 import { initializeRendering } from "./listeners";
+import { getTrackedItems } from "./itemMetadata";
+import { loadTokenStats } from "./persistence";
+import { DaggerheartStats } from "./types";
 import "./index.css";
 
 /**
@@ -18,33 +21,138 @@ OBR.onReady(async () => {
   // Initialize rendering and listeners
   await initializeRendering();
 
-  // Render a simple info component in the action popover
+  // Render the stats dashboard
   const root = ReactDOM.createRoot(document.getElementById("root")!);
-  root.render(
-    <React.StrictMode>
-      <ActionPopover />
-    </React.StrictMode>
-  );
+  root.render(<ActionPopover />);
 });
 
+interface TokenWithStats {
+  item: Item;
+  stats: DaggerheartStats;
+}
+
 /**
- * Simple action popover component
- * This shows when the user clicks the extension icon in the action bar
+ * Action popover component showing all PC stats
  */
 function ActionPopover() {
+  const [tokens, setTokens] = useState<TokenWithStats[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Load tracked PC tokens
+  const loadTokens = async () => {
+    try {
+      const tracked = await getTrackedItems();
+      const tokensWithStats: TokenWithStats[] = [];
+
+      for (const item of tracked) {
+        const stats = await loadTokenStats(item);
+        if (stats && stats.isPC) {
+          // Only show PCs, not NPCs
+          tokensWithStats.push({ item, stats });
+        }
+      }
+
+      setTokens(tokensWithStats);
+    } catch (error) {
+      console.error("[DH] Error loading tokens:", error);
+    }
+    setLoading(false);
+  };
+
+  // Load on mount and subscribe to changes
+  useEffect(() => {
+    loadTokens();
+
+    // Refresh when scene items change
+    const unsubscribe = OBR.scene.items.onChange(() => {
+      loadTokens();
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) {
+    return (
+      <div style={{ padding: "16px", fontFamily: "sans-serif" }}>
+        <h1 style={{ fontSize: "18px", marginBottom: "12px" }}>
+          Daggerheart Tracker
+        </h1>
+        <p style={{ color: "#666" }}>Loading...</p>
+      </div>
+    );
+  }
+
   return (
     <div style={{ padding: "16px", fontFamily: "sans-serif" }}>
-      <h1 style={{ fontSize: "18px", marginBottom: "12px" }}>
-        Daggerheart Tracker
+      <h1 style={{ fontSize: "18px", marginBottom: "12px", fontWeight: 600 }}>
+        Party Stats
       </h1>
-      <p style={{ marginBottom: "8px", color: "#666" }}>
-        Right-click any character token to add or edit Daggerheart stats.
-      </p>
-      <ul style={{ marginLeft: "20px", color: "#666", fontSize: "14px" }}>
-        <li>HP, Stress, Hope, and Armor tracking</li>
-        <li>Stats persist across scene changes</li>
-        <li>Visual segment bars above tokens</li>
-      </ul>
+
+      {tokens.length === 0 ? (
+        <div>
+          <p style={{ marginBottom: "8px", color: "#666", fontSize: "14px" }}>
+            No PCs tracked yet.
+          </p>
+          <p style={{ color: "#666", fontSize: "13px" }}>
+            Right-click a character token to add tracking.
+          </p>
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          {tokens.map(({ item, stats }) => (
+            <div
+              key={item.id}
+              style={{
+                padding: "12px",
+                background: "#f5f5f5",
+                borderRadius: "6px",
+                border: "1px solid #ddd",
+              }}
+            >
+              <div
+                style={{
+                  fontWeight: 600,
+                  marginBottom: "6px",
+                  fontSize: "15px",
+                }}
+              >
+                {item.name || "Unnamed"}
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "4px",
+                  fontSize: "13px",
+                }}
+              >
+                <div>
+                  <span style={{ color: "#dc2626", fontWeight: 500 }}>HP:</span>{" "}
+                  {stats.hp.current}/{stats.hp.max}
+                </div>
+                <div>
+                  <span style={{ color: "#9333ea", fontWeight: 500 }}>
+                    Stress:
+                  </span>{" "}
+                  {stats.stress.current}/{stats.stress.max}
+                </div>
+                <div>
+                  <span style={{ color: "#6b7280", fontWeight: 500 }}>
+                    Armor:
+                  </span>{" "}
+                  {stats.armor.current}/{stats.armor.max}
+                </div>
+                <div>
+                  <span style={{ color: "#eab308", fontWeight: 500 }}>
+                    Hope:
+                  </span>{" "}
+                  {stats.hope.current}/{stats.hope.max}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

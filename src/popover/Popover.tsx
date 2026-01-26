@@ -93,6 +93,9 @@ export function Popover() {
         hope: isPC
           ? { current: prev.hope.current || 2, max: prev.hope.max || 5 }
           : { current: 0, max: 0 },
+        armor: isPC
+          ? { current: prev.armor.current || 0, max: prev.armor.max || 6 }
+          : { current: 0, max: 0 },
       };
     });
   };
@@ -165,6 +168,18 @@ export function Popover() {
           color="purple"
         />
 
+        {/* Armor (only for PCs) */}
+        {stats.isPC && (
+          <StatInput
+            label="Armor"
+            current={stats.armor.current}
+            max={stats.armor.max}
+            onCurrentChange={(v) => handleStatChange("armor", "current", v)}
+            onMaxChange={(v) => handleStatChange("armor", "max", v)}
+            color="gray"
+          />
+        )}
+
         {/* Hope (only for PCs) */}
         {stats.isPC && (
           <StatInput
@@ -176,16 +191,6 @@ export function Popover() {
             color="yellow"
           />
         )}
-
-        {/* Armor */}
-        <StatInput
-          label="Armor"
-          current={stats.armor.current}
-          max={stats.armor.max}
-          onCurrentChange={(v) => handleStatChange("armor", "current", v)}
-          onMaxChange={(v) => handleStatChange("armor", "max", v)}
-          color="gray"
-        />
 
         {/* PC/NPC Toggle */}
         <div className="stat-row toggle-row">

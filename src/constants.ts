@@ -58,12 +58,12 @@ export const DEFAULT_PC_STATS: DaggerheartStats = {
 
 /**
  * Default stats for NPC tokens
- * NPCs don't track Hope (max = 0 hides it)
+ * NPCs don't track Hope or Armor (max = 0 hides them)
  */
 export const DEFAULT_NPC_STATS: DaggerheartStats = {
   hp: { current: 6, max: 6 },
   stress: { current: 0, max: 6 },
   hope: { current: 0, max: 0 },
-  armor: { current: 0, max: 6 },
+  armor: { current: 0, max: 0 },
   isPC: false,
 };

@@ -5,10 +5,11 @@ A simplified Owlbear Rodeo extension for tracking Daggerheart RPG character stat
 ## Features
 
 - **Simple Stat Tracking**: Track HP, Stress, Armor, and Hope for characters
+- **Party Stats Dashboard**: View all PC stats at a glance in the action popover (new in v0.2.0)
 - **Cross-Scene Persistence**: Token stats survive scene changes within the same room
 - **Visual Feedback**: Discrete segment bars above tokens show stats at a glance
 - **Multiplayer Support**: Any player can add/edit stats on their tokens, everyone sees all bars
-- **PC/NPC Support**: Toggle between PC (with Hope) and NPC (without Hope) modes
+- **PC/NPC Support**: Toggle between PC (with Hope & Armor) and NPC (simplified stats) modes
 - **Easy to Use**: Right-click any CHARACTER token to add or edit stats
 
 ## Prerequisites
@@ -52,9 +53,17 @@ The dev server will start at `http://localhost:5173`
 1. Open or create an Owlbear Rodeo room
 2. Click the **Extensions** button (puzzle piece icon)
 3. Toggle on "Daggerheart Tracker"
-4. Right-click any CHARACTER token and select:
+4. Click the **Daggerheart Tracker** icon in the toolbar to view the Party Stats dashboard
+5. Right-click any CHARACTER token and select:
    - **Add Daggerheart Stats** (for new tokens)
    - **Edit Daggerheart Stats** (for tracked tokens)
+
+### Party Stats Dashboard
+
+The action popover shows a live dashboard of all PC stats in the current scene:
+- View HP, Stress, Armor, and Hope for all party members at once
+- Auto-updates when stats change
+- Only shows PCs (NPCs are hidden from this view)
 
 ## How It Works
 
@@ -75,12 +84,14 @@ The dev server will start at `http://localhost:5173`
 
 **Rendering Order (top to bottom):**
 
-| Stat   | Type        | Visual  | Default PC | Default NPC |
-| ------ | ----------- | ------- | ---------- | ----------- |
-| HP     | current/max | Red     | 6/6        | 6/6         |
-| Stress | current/max | Purple  | 0/6        | 0/6         |
-| Armor  | current/max | Gray    | 0/6        | 0/6         |
-| Hope   | current/max | Gold    | 2/5        | 0/0 (hidden)|
+| Stat   | Type        | Visual  | Default PC | Default NPC        |
+| ------ | ----------- | ------- | ---------- | ------------------ |
+| HP     | current/max | Red     | 6/6        | 6/6                |
+| Stress | current/max | Purple  | 0/6        | 0/6                |
+| Armor  | current/max | Gray    | 0/6        | 0/0 (hidden)       |
+| Hope   | current/max | Gold    | 2/5        | 0/0 (hidden)       |
+
+**Note**: NPCs hide both Armor and Hope bars (max set to 0). Only HP and Stress are shown for NPCs.
 
 ## Project Structure
 
@@ -131,6 +142,25 @@ Output goes to `dist/` folder. You can host this on:
 - Verify room metadata in console: `await OBR.room.getMetadata()`
 - Check that token key is consistent
 - Look for save/load errors in console
+
+## Changelog
+
+### v0.2.0
+- **Party Stats Dashboard**: Added live dashboard showing all PC stats in the action popover
+- **NPC Mode Update**: NPCs now hide both Armor and Hope bars (not just Hope)
+- **UI Improvements**: Reordered stat inputs to match visual rendering order (HP → Stress → Armor → Hope)
+
+### v0.1.9
+- Changed Armor from simple number to current/max tracking (like other stats)
+- Updated bar positioning to render directly above tokens
+- Improved visual stacking order
+
+### v0.1.0 - v0.1.8
+- Initial release with core functionality
+- Cross-scene persistence via room metadata
+- Multiplayer support with shared bars
+- Context menu integration
+- PC/NPC toggle support
 
 ## License
 
