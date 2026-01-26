@@ -64,7 +64,7 @@ function ActionPopover() {
     loadTokens();
 
     // Refresh when scene items change (for name updates, etc.)
-    const unsubscribe = OBR.scene.items.onChange((items) => {
+    const unsubscribe = OBR.scene.items.onChange(() => {
       console.log("[DH] Dashboard: Scene items changed, reloading tokens");
       loadTokens();
     });
