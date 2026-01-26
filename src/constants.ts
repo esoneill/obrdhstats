@@ -7,13 +7,14 @@ export const EXTENSION_ID = "daggerheart-tracker";
 
 /**
  * Visual constants for segment rendering
- * All values in OBR scene units
+ * All values in OBR scene units (150 DPI = 1 grid square)
+ * Scaled appropriately for OBR's coordinate system
  */
-export const SEGMENT_WIDTH = 12;
-export const SEGMENT_HEIGHT = 8;
-export const SEGMENT_GAP = 2; // Horizontal gap between segments
-export const BAR_GAP = 4; // Vertical gap between bars
-export const BAR_OFFSET_Y = -20; // Distance above token center
+export const SEGMENT_WIDTH = 25;
+export const SEGMENT_HEIGHT = 15;
+export const SEGMENT_GAP = 5; // Horizontal gap between segments
+export const BAR_GAP = 8; // Vertical gap between bars
+export const BAR_OFFSET_Y = -120; // Distance above token center
 
 /**
  * Color schemes for each stat type
