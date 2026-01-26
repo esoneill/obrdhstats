@@ -5,6 +5,7 @@ import { isItemTracked } from "./itemMetadata";
 let refreshTimeout: number | null = null;
 let isRefreshing = false;
 let itemChangeTimeout: number | null = null;
+const refreshingTokens = new Set<string>();
 
 /**
  * Set up listeners for scene changes
@@ -62,23 +63,36 @@ export function setupSceneListeners(): void {
       return;
     }
 
+    // Only care about tracked CHARACTER items (ignore bar segment changes)
+    const trackedItems = items.filter(
+      (item) => item.layer === "CHARACTER" && isItemTracked(item)
+    );
+
+    // Exit early if no tracked tokens changed (prevents infinite loop from bar segments)
+    if (trackedItems.length === 0) {
+      return;
+    }
+
     // Debounce to avoid excessive updates
     if (itemChangeTimeout) {
       clearTimeout(itemChangeTimeout);
     }
 
     itemChangeTimeout = window.setTimeout(async () => {
-      console.log("[DH] Scene items changed, checking tracked tokens");
+      console.log(`[DH] Scene items changed, refreshing bars for ${trackedItems.length} tracked tokens`);
 
-      // Only refresh bars for tracked CHARACTER items
-      const trackedItems = items.filter(
-        (item) => item.layer === "CHARACTER" && isItemTracked(item)
-      );
+      for (const item of trackedItems) {
+        // Skip if already refreshing this token
+        if (refreshingTokens.has(item.id)) {
+          console.log(`[DH] Skipping ${item.name} - already refreshing`);
+          continue;
+        }
 
-      if (trackedItems.length > 0) {
-        console.log(`[DH] Refreshing bars for ${trackedItems.length} tracked tokens`);
-        for (const item of trackedItems) {
+        refreshingTokens.add(item.id);
+        try {
           await refreshBarsForToken(item);
+        } finally {
+          refreshingTokens.delete(item.id);
         }
       }
 
