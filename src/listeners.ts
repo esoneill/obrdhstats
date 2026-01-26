@@ -1,8 +1,10 @@
-import OBR from "@owlbear-rodeo/sdk";
-import { refreshAllBars, clearAllBars } from "./lifecycle";
+import OBR, { Item } from "@owlbear-rodeo/sdk";
+import { refreshAllBars, clearAllBars, refreshBarsForToken } from "./lifecycle";
+import { isItemTracked } from "./itemMetadata";
 
 let refreshTimeout: number | null = null;
 let isRefreshing = false;
+let itemChangeTimeout: number | null = null;
 
 /**
  * Set up listeners for scene changes
@@ -50,6 +52,38 @@ export function setupSceneListeners(): void {
       }
       refreshTimeout = null;
     }, 300);
+  });
+
+  // Listen for scene item changes (additions, renames, deletions)
+  // This handles when tokens are added or their names change
+  OBR.scene.items.onChange(async (items) => {
+    const isReady = await OBR.scene.isReady();
+    if (!isReady) {
+      return;
+    }
+
+    // Debounce to avoid excessive updates
+    if (itemChangeTimeout) {
+      clearTimeout(itemChangeTimeout);
+    }
+
+    itemChangeTimeout = window.setTimeout(async () => {
+      console.log("[DH] Scene items changed, checking tracked tokens");
+
+      // Only refresh bars for tracked CHARACTER items
+      const trackedItems = items.filter(
+        (item) => item.layer === "CHARACTER" && isItemTracked(item)
+      );
+
+      if (trackedItems.length > 0) {
+        console.log(`[DH] Refreshing bars for ${trackedItems.length} tracked tokens`);
+        for (const item of trackedItems) {
+          await refreshBarsForToken(item);
+        }
+      }
+
+      itemChangeTimeout = null;
+    }, 200);
   });
 }
 
