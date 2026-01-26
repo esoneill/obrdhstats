@@ -23,7 +23,7 @@ export function setupSceneListeners(): void {
 
   // When items in the scene change
   // This fires on add, delete, update
-  OBR.scene.items.onChange(async (items) => {
+  OBR.scene.items.onChange(async () => {
     // For simplicity, refresh everything when items change
     // A smarter implementation would diff and only update changed items
     const isReady = await OBR.scene.isReady();

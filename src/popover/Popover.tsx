@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import OBR, { Item } from "@owlbear-rodeo/sdk";
 import { DaggerheartStats } from "../types";
-import { DEFAULT_PC_STATS, DEFAULT_NPC_STATS, EXTENSION_ID } from "../constants";
+import { DEFAULT_PC_STATS, EXTENSION_ID } from "../constants";
 import { loadTokenStats, hasTokenStats } from "../persistence";
 import { initializeTracking, updateStats, removeTracking } from "../actions";
 import { StatInput } from "./StatInput";
