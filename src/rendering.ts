@@ -95,8 +95,8 @@ function buildStatBar(
  * Rendering order (top to bottom):
  * 1. HP (always)
  * 2. Stress (always)
- * 3. Hope (if max > 0, i.e., for PCs)
- * 4. Armor (if > 0)
+ * 3. Armor (always)
+ * 4. Hope (if max > 0, i.e., for PCs)
  */
 export function buildAllBars(
   tokenId: string,
@@ -121,6 +121,17 @@ export function buildAllBars(
     )
   );
 
+  // Armor bar - always shown
+  allSegments.push(
+    ...buildStatBar(
+      tokenId,
+      "armor",
+      stats.armor.current,
+      stats.armor.max,
+      barIndex++
+    )
+  );
+
   // Hope bar - only for PCs (max > 0)
   if (stats.hope.max > 0) {
     allSegments.push(
@@ -131,14 +142,6 @@ export function buildAllBars(
         stats.hope.max,
         barIndex++
       )
-    );
-  }
-
-  // Armor - only if has any
-  if (stats.armor > 0) {
-    // Armor is just filled segments, no "empty" state
-    allSegments.push(
-      ...buildStatBar(tokenId, "armor", stats.armor, stats.armor, barIndex++)
     );
   }
 

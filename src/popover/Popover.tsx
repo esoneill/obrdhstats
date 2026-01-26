@@ -178,19 +178,14 @@ export function Popover() {
         )}
 
         {/* Armor */}
-        <div className="stat-row stat-gray">
-          <label>Armor</label>
-          <input
-            type="number"
-            min={0}
-            max={10}
-            value={stats.armor}
-            onChange={(e) =>
-              handleStatChange("armor", null, parseInt(e.target.value) || 0)
-            }
-            className="armor-input"
-          />
-        </div>
+        <StatInput
+          label="Armor"
+          current={stats.armor.current}
+          max={stats.armor.max}
+          onCurrentChange={(v) => handleStatChange("armor", "current", v)}
+          onMaxChange={(v) => handleStatChange("armor", "max", v)}
+          color="gray"
+        />
 
         {/* PC/NPC Toggle */}
         <div className="stat-row toggle-row">

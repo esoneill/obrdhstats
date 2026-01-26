@@ -4,9 +4,10 @@ A simplified Owlbear Rodeo extension for tracking Daggerheart RPG character stat
 
 ## Features
 
-- **Simple Stat Tracking**: Track HP, Stress, Hope, and Armor for characters
+- **Simple Stat Tracking**: Track HP, Stress, Armor, and Hope for characters
 - **Cross-Scene Persistence**: Token stats survive scene changes within the same room
 - **Visual Feedback**: Discrete segment bars above tokens show stats at a glance
+- **Multiplayer Support**: Any player can add/edit stats on their tokens, everyone sees all bars
 - **PC/NPC Support**: Toggle between PC (with Hope) and NPC (without Hope) modes
 - **Easy to Use**: Right-click any CHARACTER token to add or edit stats
 
@@ -65,18 +66,21 @@ The dev server will start at `http://localhost:5173`
 
 ### Visual Rendering
 
-- **Local Items**: Bars are rendered as local items (GM-only, auto-cleanup)
+- **Shared Items**: Bars are visible to all players in the room
 - **Discrete Segments**: Each stat point is a colored rectangle
 - **Attachment**: Bars are attached to tokens and move with them
+- **Vertical Stacking**: Bars stack vertically above tokens (HP → Stress → Armor → Hope)
 
 ### Stats Tracked
+
+**Rendering Order (top to bottom):**
 
 | Stat   | Type        | Visual  | Default PC | Default NPC |
 | ------ | ----------- | ------- | ---------- | ----------- |
 | HP     | current/max | Red     | 6/6        | 6/6         |
 | Stress | current/max | Purple  | 0/6        | 0/6         |
+| Armor  | current/max | Gray    | 0/6        | 0/6         |
 | Hope   | current/max | Gold    | 2/5        | 0/0 (hidden)|
-| Armor  | count       | Gray    | 0          | 0           |
 
 ## Project Structure
 

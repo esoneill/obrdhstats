@@ -10,11 +10,11 @@ export const EXTENSION_ID = "daggerheart-tracker";
  * All values in OBR scene units (150 DPI = 1 grid square)
  * Scaled appropriately for OBR's coordinate system
  */
-export const SEGMENT_WIDTH = 25;
-export const SEGMENT_HEIGHT = 15;
-export const SEGMENT_GAP = 5; // Horizontal gap between segments
-export const BAR_GAP = 8; // Vertical gap between bars
-export const BAR_OFFSET_Y = -120; // Distance above token center
+export const SEGMENT_WIDTH = 30;
+export const SEGMENT_HEIGHT = 18;
+export const SEGMENT_GAP = 6; // Horizontal gap between segments
+export const BAR_GAP = 10; // Vertical gap between bars
+export const BAR_OFFSET_Y = -100; // Distance above token center
 
 /**
  * Color schemes for each stat type
@@ -52,7 +52,7 @@ export const DEFAULT_PC_STATS: DaggerheartStats = {
   hp: { current: 6, max: 6 },
   stress: { current: 0, max: 6 },
   hope: { current: 2, max: 5 },
-  armor: 0,
+  armor: { current: 0, max: 6 },
   isPC: true,
 };
 
@@ -64,6 +64,6 @@ export const DEFAULT_NPC_STATS: DaggerheartStats = {
   hp: { current: 6, max: 6 },
   stress: { current: 0, max: 6 },
   hope: { current: 0, max: 0 },
-  armor: 0,
+  armor: { current: 0, max: 6 },
   isPC: false,
 };

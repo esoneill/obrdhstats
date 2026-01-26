@@ -17,7 +17,7 @@ export interface DaggerheartStats {
   hp: TrackedStat;
   stress: TrackedStat;
   hope: TrackedStat;
-  armor: number;
+  armor: TrackedStat;
   isPC: boolean;
 }
 
