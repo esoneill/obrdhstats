@@ -9,9 +9,9 @@ import { isItemTracked } from "./itemMetadata";
  * Remove all bar segments attached to a specific token
  */
 export async function clearBarsForToken(tokenId: string): Promise<void> {
-  const localItems = await OBR.scene.local.getItems();
+  const sceneItems = await OBR.scene.items.getItems();
 
-  const segmentIds = localItems
+  const segmentIds = sceneItems
     .filter((item) => {
       const meta = item.metadata || {};
       return (
@@ -22,7 +22,7 @@ export async function clearBarsForToken(tokenId: string): Promise<void> {
     .map((item) => item.id);
 
   if (segmentIds.length > 0) {
-    await OBR.scene.local.deleteItems(segmentIds);
+    await OBR.scene.items.deleteItems(segmentIds);
     console.log(`[DH] Cleared ${segmentIds.length} bar segments for ${tokenId}`);
   }
 }
@@ -40,9 +40,9 @@ export async function renderBarsForToken(
   // Build new segments
   const segments = buildAllBars(token.id, stats);
 
-  // Add to scene as local items (visible to current user only)
+  // Add to scene as shared items (visible to all players)
   if (segments.length > 0) {
-    await OBR.scene.local.addItems(segments);
+    await OBR.scene.items.addItems(segments);
     console.log(`[DH] Rendered ${segments.length} bar segments for ${token.name}`);
   }
 }
@@ -51,9 +51,9 @@ export async function renderBarsForToken(
  * Clear all bars created by this extension
  */
 export async function clearAllBars(): Promise<void> {
-  const localItems = await OBR.scene.local.getItems();
+  const sceneItems = await OBR.scene.items.getItems();
 
-  const segmentIds = localItems
+  const segmentIds = sceneItems
     .filter((item) => {
       const meta = item.metadata || {};
       return meta[`${EXTENSION_ID}/type`] === "segment";
@@ -61,7 +61,7 @@ export async function clearAllBars(): Promise<void> {
     .map((item) => item.id);
 
   if (segmentIds.length > 0) {
-    await OBR.scene.local.deleteItems(segmentIds);
+    await OBR.scene.items.deleteItems(segmentIds);
     console.log(`[DH] Cleared all bars (${segmentIds.length} segments)`);
   }
 }
