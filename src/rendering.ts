@@ -1,4 +1,4 @@
-import { buildShape, Shape, Image, Math2, isImage } from "@owlbear-rodeo/sdk";
+import { buildShape, Shape, Image, Math2 } from "@owlbear-rodeo/sdk";
 import {
   EXTENSION_ID,
   COLORS,
