@@ -23,11 +23,20 @@ export function setupSceneListeners(): void {
 
   // When items in the scene change
   // This fires on add, delete, update
-  OBR.scene.items.onChange(async () => {
-    // For simplicity, refresh everything when items change
-    // A smarter implementation would diff and only update changed items
+  OBR.scene.items.onChange(async (items) => {
     const isReady = await OBR.scene.isReady();
-    if (isReady) {
+    if (!isReady) return;
+
+    // Only refresh if tracked CHARACTER items changed (not our own bar segments)
+    const trackedItemsChanged = items.some(
+      (item) =>
+        item.layer === "CHARACTER" &&
+        item.metadata &&
+        item.metadata["daggerheart-tracker/tracked"] !== undefined
+    );
+
+    if (trackedItemsChanged) {
+      console.log("[DH] Tracked items changed, refreshing bars");
       await refreshAllBars();
     }
   });

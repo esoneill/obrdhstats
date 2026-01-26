@@ -200,7 +200,7 @@ export function Popover() {
               checked={!stats.isPC}
               onChange={(e) => handlePCToggle(!e.target.checked)}
             />
-            NPC (hides Hope)
+            NPC
           </label>
         </div>
       </div>
