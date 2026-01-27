@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.5.1] - 2025-01-27
+
+### Fixed
+- **Stats persist after page refresh**: Added background script so bars render automatically without needing to open the dashboard
+- Previously, stat bars would disappear on page refresh because rendering only happened when the dashboard popover was open
+
 ### Added
 - **Hide NPC stats from players**: GM toggle to control whether players can see NPC stat bars
 
