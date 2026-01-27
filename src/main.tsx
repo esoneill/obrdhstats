@@ -5,6 +5,7 @@ import { setupContextMenu } from "./contextMenu";
 import { initializeRendering } from "./listeners";
 import { getTrackedItems } from "./itemMetadata";
 import { loadTokenStats } from "./persistence";
+import { loadSettings, saveSettings, isGM } from "./settings";
 import { DaggerheartStats } from "./types";
 import "./index.css";
 
@@ -37,10 +38,19 @@ interface TokenWithStats {
 function ActionPopover() {
   const [tokens, setTokens] = useState<TokenWithStats[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isGMUser, setIsGMUser] = useState(false);
+  const [hideNpcStats, setHideNpcStats] = useState(false);
 
-  // Load tracked PC tokens
+  // Load tracked PC tokens and settings
   const loadTokens = useCallback(async () => {
     try {
+      // Load GM status and settings
+      const gmStatus = await isGM();
+      setIsGMUser(gmStatus);
+
+      const settings = await loadSettings();
+      setHideNpcStats(settings.hideNpcStatsFromPlayers);
+
       const tracked = await getTrackedItems();
       const tokensWithStats: TokenWithStats[] = [];
 
@@ -57,6 +67,13 @@ function ActionPopover() {
       console.error("[DH] Error loading tokens:", error);
     }
     setLoading(false);
+  }, []);
+
+  // Handle toggle for hiding NPC stats from players
+  const handleToggleHideNpc = useCallback(async (checked: boolean) => {
+    setHideNpcStats(checked);
+    await saveSettings({ hideNpcStatsFromPlayers: checked });
+    // Bars will refresh automatically via onMetadataChange handler
   }, []);
 
   // Load on mount and subscribe to changes
@@ -88,6 +105,28 @@ function ActionPopover() {
       <h1 style={{ fontSize: "18px", marginBottom: "12px", fontWeight: 600 }}>
         Party Stats
       </h1>
+
+      {isGMUser && (
+        <label
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            fontSize: "13px",
+            color: "#666",
+            marginBottom: "12px",
+            cursor: "pointer",
+          }}
+        >
+          <input
+            type="checkbox"
+            checked={hideNpcStats}
+            onChange={(e) => handleToggleHideNpc(e.target.checked)}
+            style={{ cursor: "pointer" }}
+          />
+          Hide NPC stats from players
+        </label>
+      )}
 
       {tokens.length === 0 ? (
         <div>

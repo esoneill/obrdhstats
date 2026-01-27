@@ -4,6 +4,7 @@ import { DaggerheartStats } from "./types";
 import { buildAllBars } from "./rendering";
 import { loadTokenStats } from "./persistence";
 import { isItemTracked } from "./itemMetadata";
+import { loadSettings, isGM } from "./settings";
 
 /**
  * Remove all bar segments attached to a specific token
@@ -84,6 +85,11 @@ export async function refreshAllBars(): Promise<void> {
   // First clear everything
   await clearAllBars();
 
+  // Check visibility settings
+  const settings = await loadSettings();
+  const gmMode = await isGM();
+  const hideNpc = settings.hideNpcStatsFromPlayers && !gmMode;
+
   // Get all character tokens
   const items = await OBR.scene.items.getItems(
     (item) => item.layer === "CHARACTER"
@@ -94,6 +100,11 @@ export async function refreshAllBars(): Promise<void> {
     if (isItemTracked(item)) {
       const stats = await loadTokenStats(item);
       if (stats) {
+        // Skip NPC bars for players when setting is enabled
+        if (hideNpc && !stats.isPC) {
+          console.log(`[DH] Hiding NPC bars for ${item.name} (player view)`);
+          continue;
+        }
         await renderBarsForToken(item, stats);
       } else {
         console.warn(`[DH] Token ${item.name} is marked as tracked but has no stats`);
