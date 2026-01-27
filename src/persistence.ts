@@ -106,7 +106,17 @@ export async function loadTokenStats(
 ): Promise<DaggerheartStats | null> {
   const tokenId = await getOrCreateTokenId(item);
   const allData = await loadAllTokenData();
-  return allData[tokenId] || null;
+  const stats = allData[tokenId];
+
+  if (!stats) return null;
+
+  // Normalize: ensure isPC is a boolean (fix legacy/corrupted data)
+  if (typeof stats.isPC !== "boolean") {
+    stats.isPC = (stats.hope?.max ?? 0) > 0;
+    console.log(`[DH] Normalized isPC=${stats.isPC} for ${tokenId}`);
+  }
+
+  return stats;
 }
 
 /**

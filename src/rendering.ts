@@ -6,6 +6,7 @@ import {
   SEGMENT_HEIGHT,
   SEGMENT_GAP,
   BAR_GAP,
+  BAR_START_OFFSET,
   StatType,
 } from "./constants";
 import { DaggerheartStats } from "./types";
@@ -153,9 +154,9 @@ export function buildAllBars(
   const bounds = getImageBounds(item, sceneDpi);
   const origin = getImageCenter(item, sceneDpi);
 
-  // Position bars below the token (at the bottom edge)
+  // Position bars below the token with offset to avoid name label
   // To position above instead, use: origin.y - bounds.height
-  let barY = origin.y + bounds.height / 2;
+  let barY = origin.y + bounds.height / 2 + BAR_START_OFFSET;
 
   // HP bar - always shown
   allSegments.push(

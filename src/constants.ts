@@ -14,7 +14,8 @@ export const SEGMENT_WIDTH = 30;
 export const SEGMENT_HEIGHT = 18;
 export const SEGMENT_GAP = 6; // Horizontal gap between segments
 export const BAR_GAP = 10; // Vertical gap between bars
-export const BAR_OFFSET_Y = -100; // Distance above token center
+export const BAR_OFFSET_Y = -100; // Distance above token center (unused)
+export const BAR_START_OFFSET = 25; // Distance below token bottom edge (avoids name label)
 
 /**
  * Color schemes for each stat type
