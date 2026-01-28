@@ -8,8 +8,15 @@ import { loadSettings, isGM } from "./settings";
 
 /**
  * Remove all bar segments attached to a specific token
+ * Only GM can manage bar shapes
  */
 export async function clearBarsForToken(tokenId: string): Promise<void> {
+  // Only GM manages bar shapes
+  const gmMode = await isGM();
+  if (!gmMode) {
+    return;
+  }
+
   const sceneItems = await OBR.scene.items.getItems();
 
   const segmentIds = sceneItems
@@ -30,11 +37,18 @@ export async function clearBarsForToken(tokenId: string): Promise<void> {
 
 /**
  * Render bars for a token (clears existing bars first)
+ * Only GM can manage bar shapes
  */
 export async function renderBarsForToken(
   token: Item,
   stats: DaggerheartStats
 ): Promise<void> {
+  // Only GM manages bar shapes
+  const gmMode = await isGM();
+  if (!gmMode) {
+    return;
+  }
+
   // Only render for image items (CHARACTER tokens)
   if (!isImage(token)) {
     console.warn(`[DH] Cannot render bars for non-image item: ${token.name}`);
@@ -59,8 +73,16 @@ export async function renderBarsForToken(
 
 /**
  * Clear all bars created by this extension
+ * Only GM can manage (create/delete) bar shapes to prevent race conditions
  */
 export async function clearAllBars(): Promise<void> {
+  // Only GM manages bar shapes
+  const gmMode = await isGM();
+  if (!gmMode) {
+    console.log("[DH] Skipping clearAllBars - not GM");
+    return;
+  }
+
   const sceneItems = await OBR.scene.items.getItems();
 
   const segmentIds = sceneItems
@@ -78,8 +100,18 @@ export async function clearAllBars(): Promise<void> {
 
 /**
  * Refresh bars for all tracked tokens in the current scene
+ * Only GM can manage (create/delete) bar shapes to prevent race conditions
+ * between multiple clients fighting over the same items.
  */
 export async function refreshAllBars(): Promise<void> {
+  // Only GM manages bar shapes - prevents race conditions where
+  // GM and player clients keep recreating/deleting each other's shapes
+  const gmMode = await isGM();
+  if (!gmMode) {
+    console.log("[DH] Skipping refreshAllBars - not GM");
+    return;
+  }
+
   console.log("[DH] Refreshing all bars");
 
   // First clear everything
@@ -87,8 +119,7 @@ export async function refreshAllBars(): Promise<void> {
 
   // Check visibility settings
   const settings = await loadSettings();
-  const gmMode = await isGM();
-  const hideNpc = settings.hideNpcStatsFromPlayers && !gmMode;
+  const hideNpc = settings.hideNpcStatsFromPlayers;
 
   // Get all character tokens
   const items = await OBR.scene.items.getItems(
@@ -100,9 +131,9 @@ export async function refreshAllBars(): Promise<void> {
     if (isItemTracked(item)) {
       const stats = await loadTokenStats(item);
       if (stats) {
-        // Skip NPC bars for players when setting is enabled
+        // Skip NPC bars when hiding is enabled
         if (hideNpc && !stats.isPC) {
-          console.log(`[DH] Hiding NPC bars for ${item.name} (player view)`);
+          console.log(`[DH] Hiding NPC bars for ${item.name}`);
           continue;
         }
         await renderBarsForToken(item, stats);
@@ -115,8 +146,15 @@ export async function refreshAllBars(): Promise<void> {
 
 /**
  * Handle a single token being added or needing refresh
+ * Only GM can manage bar shapes
  */
 export async function refreshBarsForToken(token: Item): Promise<void> {
+  // Only GM manages bar shapes
+  const gmMode = await isGM();
+  if (!gmMode) {
+    return;
+  }
+
   if (!isItemTracked(token)) {
     // Not tracked, ensure no bars exist
     await clearBarsForToken(token.id);

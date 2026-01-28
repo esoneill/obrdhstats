@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+- **"Hide NPC stats from players" race condition**: Fixed bug where NPC bars were still visible to players due to race condition between GM and player clients both trying to manage bar shapes. Only GM now manages (creates/deletes) bar shapes.
+
 ## [0.5.1] - 2025-01-27
 
 ### Fixed
