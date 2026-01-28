@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import ReactDOM from "react-dom/client";
 import OBR, { Item } from "@owlbear-rodeo/sdk";
+import { setupContextMenu } from "./contextMenu";
+import { initializeRendering } from "./listeners";
 import { getTrackedItems } from "./itemMetadata";
 import { loadTokenStats } from "./persistence";
 import { loadSettings, saveSettings, isGM } from "./settings";
@@ -8,12 +10,17 @@ import { DaggerheartStats } from "./types";
 import "./index.css";
 
 /**
- * Main entry point for the Daggerheart Tracker dashboard popover
+ * Main entry point for the Daggerheart Tracker extension
  * This runs when the extension action popover is opened
- * Note: Context menu and rendering are initialized in background.ts
  */
 OBR.onReady(async () => {
-  console.log("[DH] Dashboard opened");
+  console.log("[DH] Daggerheart Tracker loaded");
+
+  // Set up context menu
+  setupContextMenu();
+
+  // Initialize rendering and listeners
+  await initializeRendering();
 
   // Render the stats dashboard
   const root = ReactDOM.createRoot(document.getElementById("root")!);
