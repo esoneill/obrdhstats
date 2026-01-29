@@ -107,25 +107,31 @@ function ActionPopover() {
       </h1>
 
       {isGMUser && (
-        <label
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            fontSize: "13px",
-            color: "#666",
-            marginBottom: "12px",
-            cursor: "pointer",
-          }}
-        >
-          <input
-            type="checkbox"
-            checked={hideNpcStats}
-            onChange={(e) => handleToggleHideNpc(e.target.checked)}
-            style={{ cursor: "pointer" }}
-          />
-          Hide NPC stats from players
-        </label>
+        <div style={{ marginBottom: "12px" }}>
+          <label
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              fontSize: "13px",
+              color: "#666",
+              cursor: "pointer",
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={hideNpcStats}
+              onChange={(e) => handleToggleHideNpc(e.target.checked)}
+              style={{ cursor: "pointer" }}
+            />
+            Hide NPC stat bars
+          </label>
+          {hideNpcStats && (
+            <p style={{ fontSize: "11px", color: "#999", marginTop: "4px", marginLeft: "24px" }}>
+              NPC bars hidden from scene. Stats still tracked in popover.
+            </p>
+          )}
+        </div>
       )}
 
       {tokens.length === 0 ? (

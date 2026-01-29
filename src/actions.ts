@@ -3,6 +3,19 @@ import { DaggerheartStats } from "./types";
 import { saveTokenStats, removeTokenStats } from "./persistence";
 import { markItemAsTracked, unmarkItemAsTracked } from "./itemMetadata";
 import { renderBarsForToken, clearBarsForToken } from "./lifecycle";
+import { loadSettings } from "./settings";
+
+/**
+ * Check if bars should be rendered for given stats based on current settings
+ */
+async function shouldRenderBars(stats: DaggerheartStats): Promise<boolean> {
+  const settings = await loadSettings();
+  // Don't render NPC bars when hiding is enabled
+  if (settings.hideNpcStatsFromPlayers && !stats.isPC) {
+    return false;
+  }
+  return true;
+}
 
 /**
  * Initialize tracking for a token
@@ -20,8 +33,12 @@ export async function initializeTracking(
   // Mark item as tracked
   await markItemAsTracked(item.id);
 
-  // Render visual bars
-  await renderBarsForToken(item, stats);
+  // Render visual bars (if not hidden by settings)
+  if (await shouldRenderBars(stats)) {
+    await renderBarsForToken(item, stats);
+  } else {
+    console.log(`[DH] Skipping bar render for ${item.name} (hidden by settings)`);
+  }
 }
 
 /**
@@ -37,8 +54,14 @@ export async function updateStats(
   // Save updated stats
   await saveTokenStats(item, stats);
 
-  // Re-render bars with new values
-  await renderBarsForToken(item, stats);
+  // Re-render bars with new values (if not hidden by settings)
+  if (await shouldRenderBars(stats)) {
+    await renderBarsForToken(item, stats);
+  } else {
+    // Clear any existing bars since they should be hidden
+    await clearBarsForToken(item.id);
+    console.log(`[DH] Cleared bars for ${item.name} (hidden by settings)`);
+  }
 }
 
 /**
