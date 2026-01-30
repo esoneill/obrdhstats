@@ -7,6 +7,7 @@ interface StatInputProps {
   onCurrentChange: (value: number) => void;
   onMaxChange: (value: number) => void;
   color: "red" | "purple" | "yellow" | "gray";
+  onSubmit?: () => void;
 }
 
 export function StatInput({
@@ -16,12 +17,14 @@ export function StatInput({
   onCurrentChange,
   onMaxChange,
   color,
+  onSubmit,
 }: StatInputProps) {
-  // Handle inline math (e.g., "+3", "-2") for current value
+  // Handle inline math (e.g., "+3", "-2") for current value, then submit
   const handleCurrentKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       const input = e.currentTarget.value;
 
+      // Apply math expression if present
       if (input.startsWith("+")) {
         const delta = parseInt(input.substring(1)) || 0;
         const newValue = Math.min(current + delta, max);
@@ -33,6 +36,16 @@ export function StatInput({
         onCurrentChange(newValue);
         e.currentTarget.value = String(newValue);
       }
+
+      // Always submit on Enter (after applying math if applicable)
+      onSubmit?.();
+    }
+  };
+
+  // Submit on Enter for max value input
+  const handleMaxKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      onSubmit?.();
     }
   };
 
@@ -62,6 +75,7 @@ export function StatInput({
           max={20}
           value={max}
           onChange={(e) => onMaxChange(parseInt(e.target.value) || 1)}
+          onKeyDown={handleMaxKeyDown}
           className="input-max"
         />
       </div>

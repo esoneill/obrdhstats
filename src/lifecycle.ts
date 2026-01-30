@@ -6,8 +6,11 @@ import { loadTokenStats } from "./persistence";
 import { isItemTracked } from "./itemMetadata";
 import { loadSettings, isGM } from "./settings";
 
+// Item types created by this extension (for cleanup)
+const EXTENSION_ITEM_TYPES = ["segment", "stat-badge", "stat-badge-text"];
+
 /**
- * Remove all bar segments attached to a specific token
+ * Remove all stat display items attached to a specific token
  * Only GM can manage bar shapes
  */
 export async function clearBarsForToken(tokenId: string): Promise<void> {
@@ -19,19 +22,20 @@ export async function clearBarsForToken(tokenId: string): Promise<void> {
 
   const sceneItems = await OBR.scene.items.getItems();
 
-  const segmentIds = sceneItems
+  const itemIds = sceneItems
     .filter((item) => {
       const meta = item.metadata || {};
+      const itemType = meta[`${EXTENSION_ID}/type`] as string;
       return (
-        meta[`${EXTENSION_ID}/type`] === "segment" &&
+        EXTENSION_ITEM_TYPES.includes(itemType) &&
         meta[`${EXTENSION_ID}/tokenId`] === tokenId
       );
     })
     .map((item) => item.id);
 
-  if (segmentIds.length > 0) {
-    await OBR.scene.items.deleteItems(segmentIds);
-    console.log(`[DH] Cleared ${segmentIds.length} bar segments for ${tokenId}`);
+  if (itemIds.length > 0) {
+    await OBR.scene.items.deleteItems(itemIds);
+    console.log(`[DH] Cleared ${itemIds.length} stat items for ${tokenId}`);
   }
 }
 
@@ -72,7 +76,7 @@ export async function renderBarsForToken(
 }
 
 /**
- * Clear all bars created by this extension
+ * Clear all stat display items created by this extension
  * Only GM can manage (create/delete) bar shapes to prevent race conditions
  */
 export async function clearAllBars(): Promise<void> {
@@ -85,16 +89,17 @@ export async function clearAllBars(): Promise<void> {
 
   const sceneItems = await OBR.scene.items.getItems();
 
-  const segmentIds = sceneItems
+  const itemIds = sceneItems
     .filter((item) => {
       const meta = item.metadata || {};
-      return meta[`${EXTENSION_ID}/type`] === "segment";
+      const itemType = meta[`${EXTENSION_ID}/type`] as string;
+      return EXTENSION_ITEM_TYPES.includes(itemType);
     })
     .map((item) => item.id);
 
-  if (segmentIds.length > 0) {
-    await OBR.scene.items.deleteItems(segmentIds);
-    console.log(`[DH] Cleared all bars (${segmentIds.length} segments)`);
+  if (itemIds.length > 0) {
+    await OBR.scene.items.deleteItems(itemIds);
+    console.log(`[DH] Cleared all stat items (${itemIds.length} items)`);
   }
 }
 

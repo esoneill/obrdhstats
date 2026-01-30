@@ -156,6 +156,7 @@ export function Popover() {
           onCurrentChange={(v) => handleStatChange("hp", "current", v)}
           onMaxChange={(v) => handleStatChange("hp", "max", v)}
           color="red"
+          onSubmit={handleSave}
         />
 
         {/* Stress */}
@@ -166,6 +167,7 @@ export function Popover() {
           onCurrentChange={(v) => handleStatChange("stress", "current", v)}
           onMaxChange={(v) => handleStatChange("stress", "max", v)}
           color="purple"
+          onSubmit={handleSave}
         />
 
         {/* Armor (only for PCs) */}
@@ -177,6 +179,7 @@ export function Popover() {
             onCurrentChange={(v) => handleStatChange("armor", "current", v)}
             onMaxChange={(v) => handleStatChange("armor", "max", v)}
             color="gray"
+            onSubmit={handleSave}
           />
         )}
 
@@ -189,6 +192,7 @@ export function Popover() {
             onCurrentChange={(v) => handleStatChange("hope", "current", v)}
             onMaxChange={(v) => handleStatChange("hope", "max", v)}
             color="yellow"
+            onSubmit={handleSave}
           />
         )}
 
@@ -199,6 +203,7 @@ export function Popover() {
               type="checkbox"
               checked={!stats.isPC}
               onChange={(e) => handlePCToggle(!e.target.checked)}
+              onKeyDown={(e) => e.key === "Enter" && handleSave()}
             />
             NPC
           </label>

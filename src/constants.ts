@@ -6,16 +6,24 @@ import { DaggerheartStats } from "./types";
 export const EXTENSION_ID = "daggerheart-tracker";
 
 /**
- * Visual constants for segment rendering
+ * Visual constants for segment rendering (legacy, kept for reference)
  * All values in OBR scene units (150 DPI = 1 grid square)
- * Scaled appropriately for OBR's coordinate system
  */
 export const SEGMENT_WIDTH = 30;
 export const SEGMENT_HEIGHT = 18;
-export const SEGMENT_GAP = 6; // Horizontal gap between segments
-export const BAR_GAP = 10; // Vertical gap between bars
-export const BAR_OFFSET_Y = -100; // Distance above token center (unused)
-export const BAR_START_OFFSET = 25; // Distance below token bottom edge (avoids name label)
+export const SEGMENT_GAP = 6;
+export const BAR_GAP = 10;
+export const BAR_OFFSET_Y = -100;
+export const BAR_START_OFFSET = 25;
+
+/**
+ * Badge display constants (new compact format)
+ * Colored circles with numbers inside, positioned at bottom of token
+ */
+export const BADGE_SIZE = 28; // Circle diameter
+export const BADGE_GAP = 4; // Spacing between badges
+export const BADGE_FONT_SIZE = 16; // Font size for the number
+export const BADGE_OFFSET_Y = -5; // Vertical offset (negative = overlap with token)
 
 /**
  * Color schemes for each stat type
