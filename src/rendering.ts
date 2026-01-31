@@ -98,14 +98,17 @@ function buildStatBadge(
   items.push(circle);
 
   // Number text centered on circle
-  // Note: Text is offset slightly to center visually on the circle
+  // Text position is top-left of bounding box, so offset to center on circle
   const text = buildText()
     .textType("PLAIN")
     .plainText(String(currentValue))
     .fontSize(BADGE_FONT_SIZE)
     .fontWeight(700)
     .textAlign("CENTER")
-    .position({ x: position.x, y: position.y - BADGE_SIZE / 2 })
+    .position({
+      x: position.x - BADGE_SIZE / 2,
+      y: position.y - BADGE_SIZE / 2
+    })
     .width(BADGE_SIZE)
     .height(BADGE_SIZE)
     .attachedTo(tokenId)
